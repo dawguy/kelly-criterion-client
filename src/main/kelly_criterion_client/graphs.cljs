@@ -68,7 +68,7 @@
 
 (defn chances [chances]
   (let [size 300
-        size-offset 20
+        size-offset 35
         probs (map :prob chances)
         payoffs (map :payout chances)
         x (->
@@ -80,6 +80,7 @@
             (.domain (into-array [0 (apply max payoffs)]))
             (.range (into-array [(- size size-offset) size-offset])))
         xAxis (fn [vals] (map #(array-map :value %1 :offset (x %1)) vals))
+        yAxis (fn [vals] (map #(array-map :value %1 :offset (y %1)) vals))
         line (->
                (d3/line)
                (.x (fn [c] (x (:p c))))
@@ -120,11 +121,17 @@
      ; https://wattenberger.com/blog/react-and-d3
      [:g
       [:path {:d (str "M " size-offset " " (- size size-offset) " H " (- size size-offset)) :stroke " currentColor "}]
+      [:path {:d (str "M " size-offset " " size-offset " V " (- size size-offset)) :stroke " currentColor "}]
       [:g (map (fn [ax] [:g
                          {:key (:value ax) :transform (str "translate(" (:offset ax) ", " (- size size-offset) ")")}
                          [:line {:y2 6 :stroke "currentColor"}]
                          [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translateY(16px)"}} (:value ax)]
                          ]) (xAxis (.ticks x)))]
+      [:g (map (fn [ax] [:g
+                         {:key (:value ax) :transform (str "translate(" size-offset ", " (:offset ax) ")")}
+                         [:line {:x2 -6 :stroke "currentColor"}]
+                         [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translate(-16px, 2px)"}} (:value ax)]
+                         ]) (yAxis (.ticks y)))]
       ]
      ]))
 
