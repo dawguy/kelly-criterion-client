@@ -3,16 +3,19 @@
 
 (defn growth-rate [growth-rates]
   (let [size 300
-         bet-sizes (map first growth-rates)
+        size-offset 35
+        bet-sizes (map first growth-rates)
          bet-growth-rates (map second growth-rates)
          x (->
              (d3/scaleLinear)
              (.domain (into-array [0 (apply max bet-sizes)]))
-             (.range (into-array [0 size])))
+             (.range (into-array [size-offset (- size size-offset)])))
          y (->
              (d3/scaleLinear)
              (.domain (into-array [(max -0.25 (apply min bet-growth-rates)) (apply max bet-growth-rates)]))
-             (.range (into-array [size 0])))
+             (.range (into-array [(- size size-offset) size-offset])))
+        xAxis (fn [vals] (map #(array-map :value %1 :offset (x %1)) vals))
+        yAxis (fn [vals] (map #(array-map :value %1 :offset (y %1)) vals))
         line (->
              (d3/area)
              (.x (fn [g] (x (first g))))
@@ -34,7 +37,7 @@
      [:path
       {:d
        (do (prn growth-rates)
-           (line growth-rates))
+           (line (filter #(< -0.25 (second %1)) growth-rates)))
        :fill   "transparent"
        :stroke (first d3/schemeCategory10)}]
      ; Positive payoff color
@@ -51,6 +54,21 @@
        :stroke "none"
        :stroke-width 1
        }]
+     ; https://wattenberger.com/blog/react-and-d3
+     [:g
+      [:path {:d (str "M " size-offset " " (- size size-offset) " H " (- size size-offset)) :stroke " currentColor "}]
+      [:path {:d (str "M " size-offset " " size-offset " V " (- size size-offset)) :stroke " currentColor "}]
+      [:g (map (fn [ax] [:g
+                         {:key (:value ax) :transform (str "translate(" (:offset ax) ", " (- size size-offset) ")")}
+                         [:line {:y2 6 :stroke "currentColor"}]
+                         [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translateY(16px)"}} (:value ax)]
+                         ]) (xAxis (.ticks x)))]
+      [:g (map (fn [ax] [:g
+                         {:key (:value ax) :transform (str "translate(" size-offset ", " (:offset ax) ")")}
+                         [:line {:x2 -6 :stroke "currentColor"}]
+                         [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translate(-20px, 2px)"}} (:value ax)]
+                         ]) (yAxis (.ticks y)))]
+      ]
      ]))
 
 (defn add-starting-points [chances]
@@ -61,10 +79,6 @@
       (recur (rest l) (cons (assoc (first l) :p (+ s (:prob (first l)))) (cons (assoc (first l) :p s) r))  (+ s (:prob (first l))))
 
       (do (prn r) r))))
-
-(def x (-> (d3/scaleLinear) (.domain (into-array [0 1])) (.range (into-array [0 300]))))
-(defn xAxis
-  [vals] (map #(array-map :value %1 :offset (x %1)) vals))
 
 (defn chances [chances]
   (let [size 300
@@ -98,8 +112,6 @@
                         (.y1 (fn [c] (if (> 100 (:payout c)) (y (:payout c)) (y 100)))))]
     [:svg
      {:viewBox (str 0 " " 0 " " size " " size)}
-     ;[:g (-> (d3/svg) (.axis) (.scale x) (.orient " bottom "))]
-     ;[:g (fn [a] ((d3/axisBottom x) a) )]
      [:path
       {:d (line (add-starting-points chances))
        :fill " transparent "
@@ -130,7 +142,7 @@
       [:g (map (fn [ax] [:g
                          {:key (:value ax) :transform (str "translate(" size-offset ", " (:offset ax) ")")}
                          [:line {:x2 -6 :stroke "currentColor"}]
-                         [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translate(-16px, 2px)"}} (:value ax)]
+                         [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translate(-20px, 2px)"}} (:value ax)]
                          ]) (yAxis (.ticks y)))]
       ]
      ]))
