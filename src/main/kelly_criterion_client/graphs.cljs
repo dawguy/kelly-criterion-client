@@ -3,7 +3,7 @@
 
 (defn growth-rate [growth-rates]
   (let [size 300
-        size-offset 35
+        size-offset 30
         bet-sizes (map first growth-rates)
          bet-growth-rates (map second growth-rates)
          x (->
@@ -33,13 +33,6 @@
             (.y1 (fn [g] (if (> 0 (second g)) (y (max -0.25 (second g))) (y 0)))))]
     [:svg
      {:viewBox (str 0 " " 0 " " size " " size)}
-     ; Line
-     [:path
-      {:d
-       (do (prn growth-rates)
-           (line (filter #(< -0.25 (second %1)) growth-rates)))
-       :fill   "transparent"
-       :stroke (first d3/schemeCategory10)}]
      ; Positive payoff color
      [:path
       {:d (positive-area growth-rates)
@@ -69,6 +62,13 @@
                          [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translate(-20px, 2px)"}} (:value ax)]
                          ]) (yAxis (.ticks y)))]
       ]
+     ; Line
+     [:path
+      {:d
+       (do (prn growth-rates)
+           (line (filter #(< -0.25 (second %1)) growth-rates)))
+       :fill   "transparent"
+       :stroke (first d3/schemeCategory10)}]
      ]))
 
 (defn add-starting-points [chances]
@@ -112,10 +112,6 @@
                         (.y1 (fn [c] (if (> 100 (:payout c)) (y (:payout c)) (y 100)))))]
     [:svg
      {:viewBox (str 0 " " 0 " " size " " size)}
-     [:path
-      {:d (line (add-starting-points chances))
-       :fill " transparent "
-       :stroke (first d3/schemeCategory10)}]
      ; Positive payoff color
      [:path
       {:d (positive-area (add-starting-points chances))
@@ -145,6 +141,10 @@
                          [:text {:key (:value ax) :style {:font-size "10px" :text-anchor "middle" :transform "translate(-20px, 2px)"}} (:value ax)]
                          ]) (yAxis (.ticks y)))]
       ]
+     [:path
+      {:d (line (add-starting-points chances))
+       :fill " transparent "
+       :stroke (first d3/schemeCategory10)}]
      ]))
 
 (comment [] " "

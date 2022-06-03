@@ -21,9 +21,7 @@
    ])
 
 (defn chancesContainer [c]
-  [:div.sm:px-7.w-full
-   [:div.bg-white.py-4.md:py-7.px-4.md:px-8.xl:px-10
-    [:div.relative.w-full.px-4.max-w-full.flex-grow.flex-1 [:h3.text-lg "Probabilities"]]
+  [:div.relative.w-full.px-4.max-w-full.flex-grow.flex-1.mb-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded     [:h3.text-lg.-mb-4 "Probabilities"]
     [:div.mt-7.block.w-full.overflow-x-auto
      [:table.w-full.whitespace-nowrap
       [:thead [:tr
@@ -31,23 +29,28 @@
                [:th.p-3.font-bold.uppercase.border.lg:table-cell "Payoff"]]]
       [:tbody
        (map chanceListContainer c)
-       ]]]]])
+       ]]]])
 
 (defn growthRateContainer [growth-rates]
   ;; Graph
-  [:div.max-w-md. (graphs/growth-rate growth-rates)])
+  [:div.relative.w-full.px-4.max-w-full.flex-grow.flex-1.mb-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded
+   [:h3.text-lg.-mb-6 {:class "text-4x1 font-large"} "Growth Rate"]
+   (graphs/growth-rate growth-rates)
+   ])
 
 (defn chancesGraphContainer [chances]
-  (prn (sort-by > :payout chances))
   ;; Graph
-  [:div.max-w-md. (graphs/chances (sort-by :payout chances))])
+  [:div.relative.w-full.px-4.max-w-full.flex-grow.flex-1.mb-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded
+   [:h3.text-lg.-mb-6 {:class "text-4x1 font-large"} "Payout Probabilities"]
+   (graphs/chances (sort-by :payout chances))])
 
 (defn home [chances]
-  [:div
-   [:div (chancesContainer chances)]
-   [:div (chancesGraphContainer chances)]
-   [:div (growthRateContainer (kelly/find-growth-rates chances))]
-   ])
+  [:div.sm:px-7.w-full
+   [:div.bg-white.py-4.md:py-7.px-4.md:px-8.xl:px-10
+    [:div (chancesContainer chances)]
+    [:div (chancesGraphContainer chances)]
+    [:div (growthRateContainer (kelly/find-growth-rates chances))]
+  ]])
 
 (defn page [data]
   (fn []
