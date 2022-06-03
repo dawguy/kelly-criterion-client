@@ -32,7 +32,9 @@
             (.y0 (y 0))
             (.y1 (fn [g] (if (> 0 (second g)) (y (max -0.25 (second g))) (y 0)))))]
     [:svg
-     {:viewBox (str 0 " " 0 " " size " " size)}
+     {
+      :class "sm:max-w-96 sm:max-h-96"
+      :viewBox (str 0 " " 0 " " size " " size)}
      ; Positive payoff color
      [:path
       {:d (positive-area growth-rates)
@@ -111,7 +113,9 @@
                         (.y0 (y 100))
                         (.y1 (fn [c] (if (> 100 (:payout c)) (y (:payout c)) (y 100)))))]
     [:svg
-     {:viewBox (str 0 " " 0 " " size " " size)}
+     {
+      :class "sm:max-w-96 sm:max-h-96"
+      :viewBox (str 0 " " 0 " " size " " size)}
      ; Positive payoff color
      [:path
       {:d (positive-area (add-starting-points chances))

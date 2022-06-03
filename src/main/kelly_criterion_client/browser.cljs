@@ -7,6 +7,7 @@
                          ; Temporary start
                          :target :home
                          :chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}]
+                         :unnormalized-chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}]
                          ; Temporary end
                          }))
 
@@ -15,6 +16,7 @@
   )
 
 (defn update-chances [chances]
+  (swap! app-db assoc :unnormalized-chances chances)
   (swap! app-db assoc :chances (kelly-criterion-client.kelly-criterion/normalize-probs chances))
 )
 

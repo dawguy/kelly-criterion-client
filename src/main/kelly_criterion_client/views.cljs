@@ -21,7 +21,8 @@
    ])
 
 (defn chancesContainer [c]
-  [:div.relative.w-full.px-4.max-w-full.flex-grow.flex-1.mb-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded     [:h3.text-lg.-mb-4 "Probabilities"]
+  [:div.relative.px-4.py-4.flex-1.mx-1.my-1.bg-gray-100.border-2.border-gray-300.border-solid.rounded
+   [:h3.text-lg.-mb-4.mr-4 "Probabilities"]
     [:div.mt-7.block.w-full.overflow-x-auto
      [:table.w-full.whitespace-nowrap
       [:thead [:tr
@@ -33,30 +34,32 @@
 
 (defn growthRateContainer [growth-rates]
   ;; Graph
-  [:div.relative.w-full.px-4.max-w-full.flex-grow.flex-1.mb-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded
+  [:div.relative.px-4.py-4.flex-1.mx-1.my-1.bg-gray-100.border-2.border-gray-300.border-solid.rounded
    [:h3.text-lg.-mb-6 {:class "text-4x1 font-large"} "Growth Rate"]
    (graphs/growth-rate growth-rates)
    ])
 
 (defn chancesGraphContainer [chances]
   ;; Graph
-  [:div.relative.w-full.px-4.max-w-full.flex-grow.flex-1.mb-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded
+  [:div.relative.px-4.py-4.flex-1.mx-1.my-1.bg-gray-100.border-2.border-gray-300.border-solid.rounded
    [:h3.text-lg.-mb-6 {:class "text-4x1 font-large"} "Payout Probabilities"]
    (graphs/chances (sort-by :payout chances))])
 
-(defn home [chances]
+(defn custom-chances [chances unnormalized-chances]
   [:div.sm:px-7.w-full
-   [:div.bg-white.py-4.md:py-7.px-4.md:px-8.xl:px-10
-    [:div (chancesContainer chances)]
-    [:div (chancesGraphContainer chances)]
-    [:div (growthRateContainer (kelly/find-growth-rates chances))]
-  ]])
+   [:div.bg-white.py-2.px-4.md:px-8.xl:px-10
+    [:div (chancesContainer unnormalized-chances)]
+    [:div.flex.flex-wrap.justify-center.align-center
+     [:div.flex-initial.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (chancesGraphContainer chances)]
+     [:div.flex-initial.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (growthRateContainer (kelly/find-growth-rates chances))]
+     ]
+    ]])
 
 (defn page [data]
   (fn []
     (let [target (:target @data)]
       (case target
-        (home (:chances @data))))))
+        (custom-chances (:chances @data) (:unnormalized-chances @data))))))
 
 (defn mainPage [data]
   [:div.min-h-screen.bg-gray-100

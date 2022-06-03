@@ -47,11 +47,11 @@
     (loop [a (first v)
            b (second v)
            rem (rest (rest v))]
-      (if (< (second a) (second b))
-        (recur b (first rem) (rest rem))
-        a))
+      (if (nil? b) a
+                   (if (< (second a) (second b))
+                     (recur b (first rem) (rest rem))
+                     a)))
     ))
-
 (defn simulate-bet [chances bet-amount]
   (loop [dart (rand)
          [c & rem-chances] chances]
