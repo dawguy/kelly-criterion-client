@@ -16,8 +16,9 @@
 
 (defn chanceListContainer [chance]
   [:tr {:key (random-uuid)}
-   [:td.p-3.text-center.border.lg:table-cell.border-b {:class "w-1/2"} (:prob chance)]
-   [:td.p-3.text-center.border.lg:table-cell.border-b {:class "w-1/2"} (:payout chance)]
+   [:td.p-1.text-center.border.lg:table-cell.border-b {:class "w-1/3"} (:prob chance)]
+   [:td.p-1.text-center.border.lg:table-cell.border-b {:class "w-1/3"} (:payout chance)]
+   [:td.p-1.text-center.border.lg:table-cell.border-b {:class "w-1/3"} ] ; TODO: Add buttons here for editing
    ])
 
 (defn chancesContainer [c]
@@ -26,13 +27,12 @@
     [:div.mt-7.block.w-full.overflow-x-auto
      [:table.w-full.whitespace-nowrap
       [:thead [:tr
-               [:th.p-3.font-bold.uppercase.border.lg:table-cell "Probability"]
-               [:th.p-3.font-bold.uppercase.border.lg:table-cell "Payoff"]]]
+               [:th.p-3.font-bold.border.uppercase.lg:table-cell "Probability"]
+               [:th.p-3.font-bold.border.uppercase.lg:table-cell "Payoff"]
+               [:th.p-3.font-bold.border.uppercase.lg:table-cell "Actions"]]]
       [:tbody
        (map chanceListContainer c)
        ]]]])
-
-(def chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}])
 
 (defn insightsListContainer [label value]
   [:tr {:key (random-uuid)}
@@ -40,7 +40,7 @@
    [:td.w-full.p-2.lg:table-cell {:class "w-1/2"} value]
    ])
 
-(defn insightsContainer [chances]
+(defn insightsContainer [chances unnormalized-chances]
   (let [expected-value (/ (reduce #(+ %1 (* (:payout %2) (:prob %2))) 0 chances) (* 100 (reduce #(+ %1 (:prob %2)) 0 chances)))
         optimal-growth-rate (kelly/optimal-growth-rate chances)]
     [:div.relative.px-4.py-4.flex-1.mx-1.my-1.bg-gray-100.border-2.border-gray-300.border-solid.rounded
@@ -56,6 +56,8 @@
                                                             (> 0 (second optimal-growth-rate)) "No"
                                                             (< expected-value 1.10) "No"
                                                             :else "Yes"))
+        (if (< 1.0 (reduce + 0 (map #(:prob %) unnormalized-chances)))
+          (insightsListContainer "WARNING: Probability Sum > 1.0" "Insights and graphs are using normalized probabilities"))
       ]]]]))
 
 (defn growthRateContainer [growth-rates]
@@ -71,21 +73,22 @@
    [:h3.text-lg.-mb-6 {:class "text-4x1 font-large"} "Payout Probabilities"]
    (graphs/chances (sort-by :payout chances))])
 
-(defn custom-chances [chances unnormalized-chances]
+(defn custom-chances [data chances unnormalized-chances]
   [:div.sm:px-7.w-full
    [:div.bg-white.py-2.px-4.md:px-8.xl:px-10
-    [:div (chancesContainer unnormalized-chances)]
-    [:div.flex.flex-wrap.justify-center.align-center
-     [:div.flex-initial.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (chancesGraphContainer chances)]
-     [:div.flex-initial.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (growthRateContainer (kelly/find-growth-rates chances))]]
-    [:div (insightsContainer chances)]
+    (if (not-empty (:name @data)) [:h1.text-2xl (:name @data)])
+    [:div (chancesContainer (:unnormalized-chances @data))]
+    [:div.flex.flex-wrap.flex-1.shrink-0.justify-center.align-center
+     [:div.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (chancesGraphContainer (:chances @data))]
+     [:div.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (growthRateContainer (kelly/find-growth-rates (:chances @data)))]]
+    [:div (insightsContainer chances unnormalized-chances)]
     ]])
 
 (defn page [data]
   (fn []
     (let [target (:target @data)]
       (case target
-        (custom-chances (:chances @data) (:unnormalized-chances @data))))))
+        (custom-chances data (:chances @data) (:unnormalized-chances @data))))))
 
 (defn mainPage [data]
   [:div.min-h-screen.bg-gray-100

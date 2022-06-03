@@ -33,7 +33,7 @@
             (.y1 (fn [g] (if (> 0 (second g)) (y (max -0.25 (second g))) (y 0)))))]
     [:svg
      {
-      :class "sm:max-w-96 sm:max-h-96"
+      :class "sm:max-w-80 sm:max-h-80"
       :viewBox (str 0 " " 0 " " size " " size)}
      ; Positive payoff color
      [:path
@@ -67,8 +67,7 @@
      ; Line
      [:path
       {:d
-       (do (prn growth-rates)
-           (line (filter #(< -0.25 (second %1)) growth-rates)))
+       (line (filter #(< -0.25 (second %1)) growth-rates))
        :fill   "transparent"
        :stroke (first d3/schemeCategory10)}]
      ]))
@@ -79,8 +78,7 @@
          s 0]
     (if (< 0 (count l))
       (recur (rest l) (cons (assoc (first l) :p (+ s (:prob (first l)))) (cons (assoc (first l) :p s) r))  (+ s (:prob (first l))))
-
-      (do (prn r) r))))
+      r)))
 
 (defn chances [chances]
   (let [size 300
@@ -114,7 +112,7 @@
                         (.y1 (fn [c] (if (> 100 (:payout c)) (y (:payout c)) (y 100)))))]
     [:svg
      {
-      :class "sm:max-w-96 sm:max-h-96"
+      :class "sm:max-w-80 sm:max-h-80"
       :viewBox (str 0 " " 0 " " size " " size)}
      ; Positive payoff color
      [:path

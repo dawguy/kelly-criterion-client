@@ -8,6 +8,7 @@
                          :target :home
                          :chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}]
                          :unnormalized-chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}]
+                         :name ""
                          ; Temporary end
                          }))
 
@@ -48,6 +49,7 @@
   []
   (update-chances standard-and-poors-odds)
   (update-chances standard-and-poors-fearful-market-odds)
+  (update-chances [{:prob 0.35 :payout 150} {:prob 0.15 :payout 500} {:prob 0.6 :payout 0}])
   (update-chances [{:prob 0.53 :payout 200} {:prob 0.47 :payout 0}])
   (update-chances [{:prob 0.6 :payout 200} {:prob 0.4 :payout 0}])
   (update-chances [{:prob 0.6 :payout 200} {:prob 0.4 :payout 0.25}])
