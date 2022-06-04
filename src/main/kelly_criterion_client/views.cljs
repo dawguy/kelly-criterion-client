@@ -51,10 +51,11 @@
 (defn navbar []
   [:nav.bg-gray-800
    [:div.flex-1.flex.items-center.justify-center {:class "sm:items-stretch sm:justify-start"}
-    [:div.flex.space-x-4
-     [:a.text-gray-300.rounded-md.px-3.py-2 {:href "/home"} "Home"]
+    [:div.flex.space-x-4.content-center
+     [:a.text-gray-300.rounded-md.px-3.py-2.no-underline {:href "/home"} "Home"]
      [:button.text-gray-300.rounded-md.px-3.py-2 {:on-click #(update-chances! standard-and-poors-odds)} "Load S&P 500"]
-     [:button.text-gray-300.rounded-md.px-3.py-2 {:on-click #(update-chances! standard-and-poors-fearful-market-odds)} "Load S&P 500 (2006-2011)"]]]])
+     [:button.text-gray-300.rounded-md.px-3.py-2 {:on-click #(update-chances! standard-and-poors-fearful-market-odds)} "Load S&P 500 (2006-2011)"]
+     [:a.text-gray-300.rounded-md.px-3.py-2.no-underline {:href "https://www.github.com/dawguy/kelly-criterion-client"} "Github"]]]])
 
 (defn remove-at-index [arr idx] (mapv identity (concat (subvec arr 0 idx) (subvec arr (inc idx)))))
 
@@ -122,7 +123,7 @@
         (Insight "Expected Value" expected-value)
         (Insight "Optimal Growth Rate Percentage" (first optimal-growth-rate))
         (Insight "Optimal Growth Rate Value" (second optimal-growth-rate))
-        (Insight "Expected To Beat Market?" (cond
+        (Insight "Expected To Beat 10% Annually?" (cond
                                                             (> 0 (second optimal-growth-rate)) "No"
                                                             (< expected-value 1.10) "No"
                                                             :else "Yes"))
@@ -143,6 +144,19 @@
    [:h3.text-lg.-mb-6 {:class "text-4x1 font-large"} "Payout Probabilities"]
    (graphs/chances (sort-by :payout chances))])
 
+(defn aboutKellyCriterionContainer []
+  [:div.relative.px-4.py-4.flex-1.mx-1.my-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded
+   [:h3.text-lg {:class "text-4x1 font-large"} "About Kelly Criterion"]
+   [:p "To learn more about the Kelly Criterion used in the above graphs and insights should check out this fantastic guide: "
+    [:a.hyperlink.break-all {:href "https://www.caichinger.com/blog/2018/04/16/kelly_criterion1/"} "https://www.caichinger.com/blog/2018/04/16/kelly_criterion1/"]]
+   ])
+
+(defn disclaimerContainer []
+  [:div.relative.px-4.py-4.flex-1.mx-1.my-4.bg-gray-100.border-2.border-gray-300.border-solid.rounded
+   [:h3.text-lg.font-bold {:class "text-4x1 font-large"} "Disclaimer"]
+   [:p "This tool was a for fun project to learn a new programming language. Anything seen on this website does not constitute financial advice. All investors or gamblers exploring games of chance should do their own independent research before making any financial decisions."]
+   ])
+
 (defn custom-chances [data]
   [:div.sm:px-7.w-full
    [:div.bg-white.py-2.px-4.md:px-8.xl:px-10
@@ -152,6 +166,8 @@
      [:div.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (chancesGraphContainer (:chances @data))]
      [:div.sm:max-w-96.sm:max-h-96 {:class "w-full sm:w-1/2"} (growthRateContainer (kelly/find-growth-rates (:chances @data)))]]
     (if (< 0 (count (:chances @data))) [:div (insightsListContainer data)])
+    (aboutKellyCriterionContainer)
+    (disclaimerContainer)
     ]])
 
 (defn page [data]
