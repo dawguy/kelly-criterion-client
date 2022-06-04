@@ -52,7 +52,7 @@
   [:nav.bg-gray-800
    [:div.flex-1.flex.items-center.justify-center {:class "sm:items-stretch sm:justify-start"}
     [:div.flex.space-x-4.content-center
-     [:a.text-gray-300.rounded-md.px-3.py-2.no-underline {:href "/home"} "Home"]
+     [:a.text-gray-300.rounded-md.px-3.py-2.no-underline {:href "/"} "Home"]
      [:button.text-gray-300.rounded-md.px-3.py-2 {:on-click #(update-chances! standard-and-poors-odds)} "Load S&P 500"]
      [:button.text-gray-300.rounded-md.px-3.py-2 {:on-click #(update-chances! standard-and-poors-fearful-market-odds)} "Load S&P 500 (2006-2011)"]
      [:a.text-gray-300.rounded-md.px-3.py-2.no-underline {:href "https://www.github.com/dawguy/kelly-criterion-client"} "Github"]]]])
