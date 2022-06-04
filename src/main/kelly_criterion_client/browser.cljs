@@ -3,22 +3,13 @@
             [reagent.dom :as rdom]
             [kelly-criterion-client.views :as views]))
 
-(defonce app-db (r/atom {
-                         ; Temporary start
-                         :target :home
-                         :chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}]
-                         :unnormalized-chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}]
-                         :name ""
-                         ; Temporary end
-                         }))
-
 (defn ^:dev/after-load start []
-  (rdom/render (views/mainPage app-db) (js/document.getElementById "app"))
+  (rdom/render (views/mainPage views/app-db) (js/document.getElementById "app"))
   )
 
-(defn update-chances [chances]
-  (swap! app-db assoc :unnormalized-chances chances)
-  (swap! app-db assoc :chances (kelly-criterion-client.kelly-criterion/normalize-probs chances))
+(defn update-chances! [chances]
+  (swap! views/app-db assoc :unnormalized-chances chances)
+  (swap! views/app-db assoc :chances (kelly-criterion-client.kelly-criterion/normalize-probs (views/str-to-number-chances chances)))
 )
 
 (defn init []
@@ -47,15 +38,15 @@
 (comment
   "Helpful data sets for the REPL"
   []
-  (update-chances standard-and-poors-odds)
-  (update-chances standard-and-poors-fearful-market-odds)
-  (update-chances [{:prob 0.35 :payout 150} {:prob 0.15 :payout 500} {:prob 0.6 :payout 0}])
-  (update-chances [{:prob 0.53 :payout 200} {:prob 0.47 :payout 0}])
-  (update-chances [{:prob 0.6 :payout 200} {:prob 0.4 :payout 0}])
-  (update-chances [{:prob 0.6 :payout 200} {:prob 0.4 :payout 0.25}])
-  (update-chances [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}])
-  (update-chances [{:prob 0.3 :payout 300} {:prob 0.7 :payout 200} {:prob 1.0 :payout 0}])
-  (update-chances [{:prob 0.1 :payout 1250} {:prob 0.9 :payout 0}])
-  (update-chances [{:prob 0.025 :payout 1500} {:prob 0.1 :payout 500} {:prob 0.2 :payout 300} {:prob 0.15 :payout 150} {:prob 0.35 :payout 50} {:prob 0.175 :payout 20}])
-  (update-chances [{:prob 0.02 :payout 2000} {:prob 0.03 :payout 1500} {:prob 0.05 :payout 1000} {:prob 0.05 :payout 500} {:prob 0.25 :payout 250} {:prob 0.15 :payout 150} {:prob 0.45 :payout 25}])
+  (update-chances! standard-and-poors-odds)
+  (update-chances! standard-and-poors-fearful-market-odds)
+  (update-chances! [{:prob 0.35 :payout 150} {:prob 0.15 :payout 500} {:prob 0.6 :payout 0}])
+  (update-chances! [{:prob 0.53 :payout 200} {:prob 0.47 :payout 0}])
+  (update-chances! [{:prob 0.6 :payout 200} {:prob 0.4 :payout 0}])
+  (update-chances! [{:prob 0.6 :payout 200} {:prob 0.4 :payout 0.25}])
+  (update-chances! [{:prob 0.15 :payout 300} {:prob 0.35 :payout 200} {:prob 0.5 :payout 0}])
+  (update-chances! [{:prob 0.3 :payout 300} {:prob 0.7 :payout 200} {:prob 1.0 :payout 0}])
+  (update-chances! [{:prob 0.1 :payout 1250} {:prob 0.9 :payout 0}])
+  (update-chances! [{:prob 0.025 :payout 1500} {:prob 0.1 :payout 500} {:prob 0.2 :payout 300} {:prob 0.15 :payout 150} {:prob 0.35 :payout 50} {:prob 0.175 :payout 20}])
+  (update-chances! [{:prob 0.02 :payout 2000} {:prob 0.03 :payout 1500} {:prob 0.05 :payout 1000} {:prob 0.05 :payout 500} {:prob 0.25 :payout 250} {:prob 0.15 :payout 150} {:prob 0.45 :payout 25}])
   )
