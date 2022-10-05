@@ -1,6 +1,9 @@
 # kelly-criterion-client
 Client side kelly criterion implementation, making it easier to explore probability distributions.
 
+
+Can be viewed at http://yoloresponsibly.com/
+
 https://www.caichinger.com/blog/2018/04/16/kelly_criterion1/
 
 "The Kelly criterion is a formula used to determine the optimal size of a series of bets in order to maximize wealth. It is often described as optimizing the logarithm of wealth, and will do better than any other strategy in the long run."
