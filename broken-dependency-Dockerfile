@@ -1,0 +1,20 @@
+FROM omnyway/amplify-cljs:latest as builder
+
+RUN mkdir -p /app
+WORKDIR /app
+COPY package.json package-lock.json .
+
+RUN npm install --save-dev shadow-cljs
+
+COPY . .
+
+RUN ./node_modules/.bin/shadow-cljs release app
+RUN ./node_modules/.bin/cross-env NODE_ENV=production postcss src/css/tailwind.css -o ./public/css/main.css --verbose
+
+FROM nginx:stable-alpine
+EXPOSE 80
+RUN rm -rf /usr/share/nginx/html/*
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /app/public /usr/share/nginx/html
+
+CMD ["nginx", "-g", "daemon off;"]
